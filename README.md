@@ -23,22 +23,23 @@ This project is designed to demonstrate SQL skills and techniques typically used
 - **Table Creation**: A table named `retail_sales` is created to store the sales data. The table structure includes columns for transaction ID, sale date, sale time, customer ID, gender, age, product category, quantity sold, price per unit, cost of goods sold (COGS), and total sale amount.
 
 ```sql
-CREATE DATABASE p1_retail_db;
+create database sql_project_retail;
 
-CREATE TABLE retail_sales
-(
-    transactions_id INT PRIMARY KEY,
-    sale_date DATE,	
-    sale_time TIME,
-    customer_id INT,	
-    gender VARCHAR(10),
-    age INT,
-    category VARCHAR(35),
-    quantity INT,
-    price_per_unit FLOAT,	
-    cogs FLOAT,
-    total_sale FLOAT
-);
+create table retail_sales
+	(
+	transactions_id int primary key,
+	sale_date date,
+	sale_time time,
+	customer_id int,
+	gender varchar(15),
+	age int,
+	category varchar(15),
+	quantity int,
+	price_per_unit float,
+	cogs float,
+	total_sale float
+
+	);
 ```
 
 ### 2. Data Exploration & Cleaning
@@ -97,7 +98,7 @@ SELECT
     SUM(total_sale) as net_sale,
     COUNT(*) as total_orders
 FROM retail_sales
-GROUP BY 1
+GROUP BY category
 ```
 
 4. **Write a SQL query to find the average age of customers who purchased items from the 'Beauty' category.**:
@@ -125,25 +126,23 @@ GROUP
     BY 
     category,
     gender
-ORDER BY 1
+ORDER BY 2
 ```
 
 7. **Write a SQL query to calculate the average sale for each month. Find out best selling month in each year**:
 ```sql
 SELECT 
-       year,
-       month,
-    avg_sale
+       *
 FROM 
 (    
 SELECT 
     EXTRACT(YEAR FROM sale_date) as year,
     EXTRACT(MONTH FROM sale_date) as month,
-    AVG(total_sale) as avg_sale,
+    AVG(total_sale) as sale,
     RANK() OVER(PARTITION BY EXTRACT(YEAR FROM sale_date) ORDER BY AVG(total_sale) DESC) as rank
 FROM retail_sales
 GROUP BY 1, 2
-) as t1
+) as s1
 WHERE rank = 1
 ```
 
@@ -154,17 +153,17 @@ SELECT
     SUM(total_sale) as total_sales
 FROM retail_sales
 GROUP BY 1
-ORDER BY 2 DESC
+ORDER BY total_sales DESC
 LIMIT 5
 ```
 
 9. **Write a SQL query to find the number of unique customers who purchased items from each category.**:
 ```sql
-SELECT 
-    category,    
-    COUNT(DISTINCT customer_id) as cnt_unique_cs
+SELECT     
+    COUNT(DISTINCT customer_id) as customer_count,
+    category
 FROM retail_sales
-GROUP BY category
+GROUP BY 2
 ```
 
 10. **Write a SQL query to create each shift and number of orders (Example Morning <12, Afternoon Between 12 & 17, Evening >17)**:
@@ -174,16 +173,16 @@ AS
 (
 SELECT *,
     CASE
-        WHEN EXTRACT(HOUR FROM sale_time) < 12 THEN 'Morning'
-        WHEN EXTRACT(HOUR FROM sale_time) BETWEEN 12 AND 17 THEN 'Afternoon'
-        ELSE 'Evening'
+        WHEN EXTRACT(HOUR FROM sale_time) < 12 THEN 'morning'
+        WHEN EXTRACT(HOUR FROM sale_time) BETWEEN 12 AND 17 THEN 'afternoon'
+        ELSE 'evening'
     END as shift
 FROM retail_sales
 )
 SELECT 
     shift,
     COUNT(*) as total_orders    
-FROM hourly_sale
+FROM hourly_sales
 GROUP BY shift
 ```
 
@@ -211,17 +210,3 @@ This project serves as a comprehensive introduction to SQL for data analysts, co
 3. **Run the Queries**: Use the SQL queries provided in the `analysis_queries.sql` file to perform your analysis.
 4. **Explore and Modify**: Feel free to modify the queries to explore different aspects of the dataset or answer additional business questions.
 
-## Author - Zero Analyst
-
-This project is part of my portfolio, showcasing the SQL skills essential for data analyst roles. If you have any questions, feedback, or would like to collaborate, feel free to get in touch!
-
-### Stay Updated and Join the Community
-
-For more content on SQL, data analysis, and other data-related topics, make sure to follow me on social media and join our community:
-
-- **YouTube**: [Subscribe to my channel for tutorials and insights](https://www.youtube.com/@zero_analyst)
-- **Instagram**: [Follow me for daily tips and updates](https://www.instagram.com/zero_analyst/)
-- **LinkedIn**: [Connect with me professionally](https://www.linkedin.com/in/najirr)
-- **Discord**: [Join our community to learn and grow together](https://discord.gg/36h5f2Z5PK)
-
-Thank you for your support, and I look forward to connecting with you!
